@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import TodoList from "./TodoList";
+import TodoList from "./component/TodoList";
 
 const tasks1 = [
     {id:1,title:'html',isDone:true},
