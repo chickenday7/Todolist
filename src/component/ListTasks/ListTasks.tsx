@@ -1,18 +1,28 @@
 import React from "react";
-import {TasksType} from "../../App";
-
+import {filterValuesType, TasksType} from "../../App";
 
 
 type ListTasks = {
     tasks: TasksType
-    key:number
-    id:number
+    key: number
+    deleteTasks: (id:number) => void
 }
 
-const ListTasksMap = (props:ListTasks) => {
-    debugger;
+const ListTasksMap = (props: ListTasks) => {
 
-    return(<li><input type="checkbox" checked={props.tasks.isDone}/> <span>{props.tasks.title}</span></li>)
+
+    const onDeleteTask = (id:number) => {
+      props.deleteTasks(id)
+    }
+
+
+
+    return (
+        <li key={props.key}>
+            <input type="checkbox" checked={props.tasks.isDone}/>
+            <span>{props.tasks.title}</span>
+            <button onClick={() => {onDeleteTask(props.tasks.id)}}>x</button>
+        </li>)
 }
 
 export default ListTasksMap

@@ -1,18 +1,26 @@
-import React from "react";
-import {TasksType} from "../App";
+import React, {ReactNode} from "react";
+import {filterValuesType, TasksType} from "../App";
 import ListTasksMap from "./ListTasks/ListTasks";
 
 
 type TodoListProps = {
     title: string
     tasks: Array<TasksType>
+    deleteTasks: (id:number) => void
+    changeFilter: (filterValue:filterValuesType) => void
 }
 
 
 const TodoList = (props: TodoListProps) => {
 
 
-    let listTasks = props.tasks.map((elem,index) => <ListTasksMap tasks={elem} key={props.tasks[index].id} id={index} />)
+    let listTasks:ReactNode = props.tasks.map((elem) => <ListTasksMap tasks={elem}
+                                                                      key={elem.id}
+                                                                      deleteTasks={props.deleteTasks}
+
+    />)
+
+
 
     return (
         <div>
@@ -25,9 +33,9 @@ const TodoList = (props: TodoListProps) => {
                 {listTasks}
             </ul>
             <div>
-                <button>All</button>
-                <button>Active</button>
-                <button>Completed</button>
+                <button onClick={() => {props.changeFilter('all')}} >All</button>
+                <button onClick={() => {props.changeFilter('active')}} >Active</button>
+                <button onClick={() => {props.changeFilter('completed')}} >Completed</button>
             </div>
         </div>
     )
