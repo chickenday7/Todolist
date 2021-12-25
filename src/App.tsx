@@ -3,9 +3,6 @@ import './App.css';
 import TodoList from "./component/TodoList";
 
 
-
-
-
 export type filterValuesType = 'all' | 'completed' | 'active'
 
 export type TasksType = {
@@ -22,12 +19,23 @@ function App() {
     ])
 
 
-    let deleteTasks = (id:number) => {
+    let deleteTasks = (id:number):void => {
         let filteredTasks = tasks.filter((task) => {
             return  task.id !== id
         })
         setTasks(filteredTasks)
     }
+
+    let addTask = (text:string):void => {
+        setTasks([{id:tasks.length+1,title:text, isDone:false},...tasks])
+        setNameTask('')
+    }
+
+    let [nameTask, setNameTask] = useState<string>('')
+    const addSymbol = (symbol:string) => {
+      setNameTask(symbol)
+    }
+
 
 
     let [filter, setFilter] = useState<filterValuesType>('all')
@@ -54,6 +62,11 @@ function App() {
                       tasks={tasksForTodoList}
                       deleteTasks = {deleteTasks}
                       changeFilter = {changeFilter}
+                      nameTask = {nameTask}
+                      addSymbolTask = {addSymbol}
+                      addTasks = {addTask}
+
+
 
             />
         </div>
