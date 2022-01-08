@@ -66,6 +66,12 @@ function App() {
             setTasks(JSON.parse(prevTasks))
         }
     },[])
+    useEffect(()=>{
+        localStorage.setItem('tasks',JSON.stringify(tasks))
+    },[tasks])
+    useEffect(()=>{
+        localStorage.setItem('todolist',JSON.stringify(todoList))
+    },[todoList])
 
 
 
@@ -74,24 +80,27 @@ function App() {
         setTodoList(newArrayTodolists)
         delete tasks[todolistID]
         setTasks({...tasks})
+
     }
     let deleteTasks = (keyTask: string, taskID: string): void => {
         tasks[keyTask] = tasks[keyTask].filter(task => task.id !== taskID)
         setTasks({...tasks})
-        localStorage.setItem('tasks', JSON.stringify({...tasks}))
+
     }
     let switchDone = (keyTasks: string, taskID: string, isDone: boolean) => {
         tasks[keyTasks] = tasks[keyTasks].map(task => task.id === taskID ? {...task, isDone} : task)
         setTasks({...tasks})
+
     }
     let addTask = (text: string, keyTask: string): void => {
         tasks[keyTask] = [...tasks[keyTask], {id: uuid_v4(), title: text, isDone: false}]
         setTasks({...tasks})
-        localStorage.setItem('tasks', JSON.stringify({...tasks}))
+
     }
     let changeFilter = (filterValue: filterValuesType, todolistID: string) => {
         let newTodoList = todoList.map(item => item.id === todolistID ? {...item, filter: filterValue} : item)
         setTodoList(newTodoList)
+
     }
 
 
