@@ -1,8 +1,8 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import TodoList from "./component/TodoList";
 import {v4 as uuid_v4} from "uuid";
-import {AddTodoList} from "./component/AddTodoList/AddTodoList";
+import {AddItemForm} from "./component/AddItemForm/AddItemForm";
 
 
 export type filterValuesType = 'all' | 'completed' | 'active'
@@ -37,100 +37,89 @@ function App() {
                 {id: uuid_v4(), title: 'Chocolate', isDone: true},]
         }
     )
-    let onSetTasksFromLS = () => {
-        let prevTasks = localStorage.getItem('allTasks')
-        if (prevTasks){
+
+    useEffect(() => {
+        let prevTasks = localStorage.getItem('tasks')
+        let prevTodoList = localStorage.getItem('todolist')
+        if (prevTasks) {
             setTasks(JSON.parse(prevTasks))
         }
-    }
-
-    useEffect(()=>{
-        return ()=>{
-            localStorage.setItem('todolist',JSON.stringify(todoList))
-        }
-    },[])
-    useEffect(()=>{
-        return ()=>{
-            localStorage.setItem('tasks',JSON.stringify(tasks))
-        }
-    },[])
-    useEffect(()=>{
-        let prevTodoList = localStorage.getItem('todolist')
-        if(prevTodoList){
+        if (prevTodoList) {
             setTodoList(JSON.parse(prevTodoList))
         }
-    },[])
-    useEffect(()=>{
-        let prevTasks = localStorage.getItem('tasks')
-        if(prevTasks){
-            setTasks(JSON.parse(prevTasks))
-        }
-    },[])
-    useEffect(()=>{
-        localStorage.setItem('tasks',JSON.stringify(tasks))
-    },[tasks])
-    useEffect(()=>{
-        localStorage.setItem('todolist',JSON.stringify(todoList))
-    },[todoList])
+    }, [])
+    useEffect(() => {
+        localStorage.setItem('tasks', JSON.stringify(tasks))
+        localStorage.setItem('todolist', JSON.stringify(todoList))
+    }, [tasks, todoList])
 
 
-
+    let addTodoList = (titleTodoList: string) => {
+        let idNewTodo = uuid_v4()
+        setTodoList([{id: idNewTodo, title: titleTodoList, filter: 'all'}, ...todoList])
+        tasks[idNewTodo] = []
+        setTasks({...tasks})
+    }
     let removeTodolist = (todolistID: string) => {
         let newArrayTodolists = todoList.filter(item => item.id !== todolistID)
         setTodoList(newArrayTodolists)
         delete tasks[todolistID]
         setTasks({...tasks})
-
     }
-    let deleteTasks = (keyTask: string, taskID: string): void => {
-        tasks[keyTask] = tasks[keyTask].filter(task => task.id !== taskID)
-        setTasks({...tasks})
-
+    let renameTodolist = (text: string, keyTodolis: string): void => {
+        let newTodolist = todoList.map(item => item.id === keyTodolis ? {...item, title: text} : item)
+        setTodoList(newTodolist)
     }
-    let switchDone = (keyTasks: string, taskID: string, isDone: boolean) => {
-        tasks[keyTasks] = tasks[keyTasks].map(task => task.id === taskID ? {...task, isDone} : task)
+    let deleteTasks = (keyTodolist: string, taskID: string): void => {
+        tasks[keyTodolist] = tasks[keyTodolist].filter(task => task.id !== taskID)
         setTasks({...tasks})
-
     }
-    let addTask = (text: string, keyTask: string): void => {
-        tasks[keyTask] = [...tasks[keyTask], {id: uuid_v4(), title: text, isDone: false}]
+    let addTask = (text: string, keyTodolist: string): void => {
+        tasks[keyTodolist] = [...tasks[keyTodolist], {id: uuid_v4(), title: text, isDone: false}]
         setTasks({...tasks})
-
+    }
+    let switchDone = (keyTodolist: string, taskID: string, isDone: boolean) => {
+        tasks[keyTodolist] = tasks[keyTodolist].map(task => task.id === taskID ? {...task, isDone} : task)
+        setTasks({...tasks})
+    }
+    let renameTask = (todolistID:string,taskID:string,text:string)=>{
+        tasks[todolistID] = tasks[todolistID].map(task => task.id === taskID ? {...task,title:text}:task)
+        setTasks({...tasks})
     }
     let changeFilter = (filterValue: filterValuesType, todolistID: string) => {
         let newTodoList = todoList.map(item => item.id === todolistID ? {...item, filter: filterValue} : item)
         setTodoList(newTodoList)
-
     }
 
 
     let AllTodoLists = todoList.map((item) => {
         let filteredTasks = tasks[item.id]
         if (item.filter === 'completed') {
-            filteredTasks = filteredTasks.filter((task:any) => task.isDone)
+            filteredTasks = filteredTasks.filter((task: any) => task.isDone)
         }
         if (item.filter === 'active') {
-            filteredTasks = filteredTasks.filter((task:any) => !task.isDone)
+            filteredTasks = filteredTasks.filter((task: any) => !task.isDone)
         }
+
 
         return <TodoList
             key={item.id}
-            id={item.id}
+            todolistID={item.id}
             title={item.title}
             tasks={filteredTasks}
             deleteTasks={deleteTasks}
             changeFilter={changeFilter}
-            addTasks={addTask}
+            addTask={addTask}
             switchDone={switchDone}
             removeTodolist={removeTodolist}
+            renameTodolist={renameTodolist}
+            renameTask={renameTask}
         />
     })
 
     return (
         <div className="App">
-            <AddTodoList
-                setTasksFromLS = {onSetTasksFromLS}
-            />
+            <AddItemForm callback={addTodoList}/>
             {AllTodoLists}
         </div>
     );
