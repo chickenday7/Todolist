@@ -78,12 +78,12 @@ function App() {
         tasks[keyTodolist] = [...tasks[keyTodolist], {id: uuid_v4(), title: text, isDone: false}]
         setTasks({...tasks})
     }
-    let switchDone = (keyTodolist: string, taskID: string, isDone: boolean) => {
-        tasks[keyTodolist] = tasks[keyTodolist].map(task => task.id === taskID ? {...task, isDone} : task)
-        setTasks({...tasks})
-    }
     let renameTask = (todolistID:string,taskID:string,text:string)=>{
         tasks[todolistID] = tasks[todolistID].map(task => task.id === taskID ? {...task,title:text}:task)
+        setTasks({...tasks})
+    }
+    let switchDone = (keyTodolist: string, taskID: string, isDone: boolean) => {
+        tasks[keyTodolist] = tasks[keyTodolist].map(task => task.id === taskID ? {...task, isDone} : task)
         setTasks({...tasks})
     }
     let changeFilter = (filterValue: filterValuesType, todolistID: string) => {
