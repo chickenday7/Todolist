@@ -1,9 +1,0 @@
-.App {
-  padding: 30px;
-  display: flex;
-  position: relative;
-}
-
-.App > div {
-  margin-right: 50px;
-}

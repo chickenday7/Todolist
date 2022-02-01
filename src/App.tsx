@@ -1,19 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import './App.css';
+import './AppStyle.module.scss';
 import TodoList from "./component/TodoList";
 import {v4 as uuid_v4} from "uuid";
 import {AddItemForm} from "./component/AddItemForm/AddItemForm";
-
-import {Button} from "@material-ui/core";
+import s from './AppStyle.module.scss'
 
 
 export type filterValuesType = 'all' | 'completed' | 'active'
-
 export type TasksType = {
     id: string
     title: string
     isDone: boolean
 }
+
 
 function App() {
     let todolistID1: string = uuid_v4()
@@ -97,10 +96,10 @@ function App() {
     let AllTodoLists = todoList.map((item) => {
         let filteredTasks = tasks[item.id]
         if (item.filter === 'completed') {
-            filteredTasks = filteredTasks.filter((task: any) => task.isDone)
+            filteredTasks = filteredTasks.filter((task: TasksType) => task.isDone)
         }
         if (item.filter === 'active') {
-            filteredTasks = filteredTasks.filter((task: any) => !task.isDone)
+            filteredTasks = filteredTasks.filter((task: TasksType) => !task.isDone)
         }
 
 
@@ -120,11 +119,13 @@ function App() {
     })
 
     return (
-        <div className="App">
-            <div>
-                <AddItemForm callback={addTodoList}/>
+        <div className={s.App}>
+            <div className={s.wrapperAddForm}>
+                <AddItemForm label={'Todolist'} callback={addTodoList}/>
             </div>
-            {AllTodoLists}
+            <div className={s.wrapperTodolists}>
+                {AllTodoLists}
+            </div>
 
         </div>
     );

@@ -1,40 +1,57 @@
 import React, {useState} from "react";
 import {TasksType} from "../../App";
 import {ChangeNameForm} from "../AddItemForm/ChangeNameForm";
+import DeleteIcon from "@material-ui/icons/Delete";
+import {createStyles, makeStyles} from "@material-ui/core";
+import s from './ListTasksStyle.module.scss'
+
+
+const useStyles = makeStyles((theme) =>
+    createStyles({
+        delete:{
+            width:'20px',
+            height:'20px',
+            cursor:'pointer',
+            marginLeft:'auto',
+            '&:hover':{
+                color:'red'
+            }
+        }
+    })
+)
 
 
 type ListTasks = {
-    todolistID:string
+    todolistID: string
     tasks: TasksType
-    deleteTasks: (keyTask:string,taskID:string) => void
-    switchDone: (keyTask:string, taskID:string, done:boolean) => void
+    deleteTasks: (keyTask: string, taskID: string) => void
+    switchDone: (keyTask: string, taskID: string, done: boolean) => void
     renameTask: (todolistID: string, taskID: string, text: string) => void
 }
-
 const ListTasksMap = (props: ListTasks) => {
     const [changeMod, setChangeMode] = useState<boolean>(false)
     const onDeleteTask = () => {
-        props.deleteTasks(props.todolistID,props.tasks.id)
+        props.deleteTasks(props.todolistID, props.tasks.id)
     }
     const onSwitchDone = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
         props.switchDone(props.todolistID, props.tasks.id, e.currentTarget.checked)
     }
-    const renameTask = (text:string) => {
-        props.renameTask(props.todolistID,props.tasks.id,text)
+    const renameTask = (text: string) => {
+        props.renameTask(props.todolistID, props.tasks.id, text)
     }
     const onInputMode = () => {
         setChangeMode(true)
     }
-
+    const classes = useStyles()
     return (
-        <li key={props.tasks.id}>
+        <li key={props.tasks.id} className={s.wrapperItemTask}>
             <input type="checkbox" checked={props.tasks.isDone} onClick={onSwitchDone}/>
             {changeMod
-                ? <ChangeNameForm name={props.tasks.title} callback={renameTask} setChangeMode={setChangeMode} />
+                ? <ChangeNameForm name={props.tasks.title} callback={renameTask} setChangeMode={setChangeMode}/>
                 : <span onClick={onInputMode}>{props.tasks.title}</span>
             }
-            <button onClick={onDeleteTask}>x
-            </button>
+            <DeleteIcon className={classes.delete} onClick={onDeleteTask}/>
+
         </li>
     )
 }

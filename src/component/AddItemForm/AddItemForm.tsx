@@ -5,9 +5,6 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 
 
-type AddItemFormType = {
-    callback: (text: string) => void
-}
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -32,6 +29,12 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
+
+type AddItemFormType = {
+    callback: (text: string) => void
+    label:string
+}
+
 export const AddItemForm = (props: AddItemFormType) => {
 
     let [name, setName] = useState<string>('')
@@ -54,8 +57,8 @@ export const AddItemForm = (props: AddItemFormType) => {
     }
     const classes = useStyles()
     return (
-        <div className={s.wrapperTask}>
-            <TextField onKeyPress={onAddItemKey} onChange={onChangeInput} value={name} label={'Add Task'}/>
+        <div className={s.wrapperAddForm}>
+            <TextField onKeyPress={onAddItemKey} onChange={onChangeInput} value={name} label={`Add ${props.label}`}/>
             <AddCircleIcon className={classes.plus}  onClick={onAddItemButton}/>
         </div>
     )
