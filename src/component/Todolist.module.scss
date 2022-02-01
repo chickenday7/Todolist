@@ -1,0 +1,16 @@
+.buttonDelete{
+  width: 25px;
+  height: 50px;
+  background: blue;
+  color: red;
+}
+.titleTodo{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 5px 0;
+  font-size: 28px;
+}
+.wrapperTodo{
+  width: 250px;
+}

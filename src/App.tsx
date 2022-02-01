@@ -4,6 +4,8 @@ import TodoList from "./component/TodoList";
 import {v4 as uuid_v4} from "uuid";
 import {AddItemForm} from "./component/AddItemForm/AddItemForm";
 
+import {Button} from "@material-ui/core";
+
 
 export type filterValuesType = 'all' | 'completed' | 'active'
 
@@ -119,8 +121,11 @@ function App() {
 
     return (
         <div className="App">
-            <AddItemForm callback={addTodoList}/>
+            <div>
+                <AddItemForm callback={addTodoList}/>
+            </div>
             {AllTodoLists}
+
         </div>
     );
 }

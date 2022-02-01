@@ -30,7 +30,7 @@ const ListTasksMap = (props: ListTasks) => {
         <li key={props.tasks.id}>
             <input type="checkbox" checked={props.tasks.isDone} onClick={onSwitchDone}/>
             {changeMod
-                ? <ChangeNameForm callback={renameTask} setChangeMode={setChangeMode} />
+                ? <ChangeNameForm name={props.tasks.title} callback={renameTask} setChangeMode={setChangeMode} />
                 : <span onClick={onInputMode}>{props.tasks.title}</span>
             }
             <button onClick={onDeleteTask}>x

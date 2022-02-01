@@ -1,29 +1,62 @@
 import React, {ChangeEvent, useState} from "react";
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import s from './AddItemFormStyle.module.scss'
+import {createStyles, makeStyles, Theme} from "@material-ui/core";
+import TextField from '@material-ui/core/TextField';
 
 
 type AddItemFormType = {
-    callback:(text:string)=>void
+    callback: (text: string) => void
 }
-export const AddItemForm = (props:AddItemFormType) => {
+
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        plus:{
+            color:'black',
+            cursor:'pointer',
+            position:'absolute',
+            right:'0',
+            bottom:'3px',
+            '&:hover': {
+                color:'#2d97e7'
+            }
+        },
+        input:{
+            width:'250px',
+            padding: '12,5px',
+            'input':{
+                padding:'11,5px 14px'
+            }
+        }
+    }),
+)
+
+export const AddItemForm = (props: AddItemFormType) => {
 
     let [name, setName] = useState<string>('')
-    const onChangeInput = (e:ChangeEvent<HTMLInputElement>) => {
+    const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
         addSymbol(e.currentTarget.value)
     }
-    const onAddItem = () => {
-            props.callback(name)
+    const onAddItemButton = () => {
+        props.callback(name)
+        setName('')
     }
     const addSymbol = (symbol: string) => {
         setName(symbol)
     }
-    const onAddItemKey = (e:React.KeyboardEvent<HTMLInputElement>) => {
-      e.key === 'Enter' && props.callback(name)
-    }
+    const onAddItemKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if(e.key === 'Enter'){
+            setName('')
+        }
+        e.key === 'Enter' && props.callback(name)
 
-    return(
-        <div>
-            <input onKeyPress={onAddItemKey} value={name} onChange={onChangeInput} />
-            <button onClick={onAddItem}>+</button>
+    }
+    const classes = useStyles()
+    return (
+        <div className={s.wrapperTask}>
+            <TextField onKeyPress={onAddItemKey} onChange={onChangeInput} value={name} label={'Add Task'}/>
+            <AddCircleIcon className={classes.plus}  onClick={onAddItemButton}/>
         </div>
     )
 }

@@ -3,7 +3,9 @@ import {filterValuesType, TasksType} from "../App";
 import ListTasksMap from "./ListTasks/ListTasks";
 import {AddItemForm} from "./AddItemForm/AddItemForm";
 import {ChangeNameForm} from "./AddItemForm/ChangeNameForm";
-
+import {createStyles, makeStyles, Theme} from "@material-ui/core";
+import DeleteIcon from '@material-ui/icons/Delete';
+import s from './Todolist.module.scss'
 
 type TodoListProps = {
     todolistID: string
@@ -17,6 +19,20 @@ type TodoListProps = {
     renameTodolist: (text: string, keyTodolist: string) => void
     renameTask: (todolistID: string, taskID: string, text: string) => void
 }
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        delete: {
+            width:'25px',
+            height:'25px',
+            cursor:'pointer',
+            '&:hover':{
+                color:'red'
+            }
+        },
+    }),
+)
+
 const TodoList = (props: TodoListProps) => {
 
     const [changeMod, setChangeMode] = useState<boolean>(false)
@@ -27,9 +43,6 @@ const TodoList = (props: TodoListProps) => {
                                                                        deleteTasks={props.deleteTasks}
                                                                        switchDone={props.switchDone}
                                                                        renameTask={props.renameTask}
-
-
-
     />)
     const onSetFilter = (e: MouseEvent<HTMLButtonElement>) => {
         props.changeFilter(e.currentTarget.name as filterValuesType, props.todolistID)
@@ -46,16 +59,16 @@ const TodoList = (props: TodoListProps) => {
     const renameTask = (text: string) => {
         props.renameTodolist(text, props.todolistID)
     }
+    const classes = useStyles();
     return (
-        <div>
+        <div className={s.wrapperTodo}>
             {changeMod
-                ? <ChangeNameForm setChangeMode={setChangeMode} callback={renameTask}/>
-                : <h3 onClick={onInputMode}>{props.title}
-                    <button onClick={onRemoveTodolist}>X</button>
+                ? <ChangeNameForm name={props.title} setChangeMode={setChangeMode} callback={renameTask}/>
+                : <h3 className={s.titleTodo} onClick={onInputMode}>{props.title}
+                    <DeleteIcon onClick={onRemoveTodolist} className={classes.delete}/>
                 </h3>
             }
-            <AddItemForm callback={addTask}
-            />
+            <AddItemForm callback={addTask}/>
             <ul>
                 {listTasks}
             </ul>
