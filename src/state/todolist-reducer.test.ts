@@ -38,7 +38,6 @@ test('add todolist', ()=>{
     expect(endState.todo[0].title).toBe(nameTodo)
 })
 
-
 test('remove todolist',()=>{
     const startState:StateType = {
         todo:[
@@ -89,6 +88,7 @@ test('rename todolist',()=>{
     let mutableElement = endState.todo.find(el => el.id === todolistID1)
     expect(mutableElement!.title).toBe(newName)
 })
+
 test('deleteTask',()=>{
     const taskID = uuid_v4()
     const startState:StateType = {
@@ -193,6 +193,7 @@ test('switch done', ()=>{
     let endState = todolistReducer(startState, changeDoneTaskAC(todolistID1,taskID,startState.tasks[todolistID1][1].isDone))
     expect(endState.tasks[todolistID1][1].isDone).toBe(true)
 })
+
 test('change filter todo', ()=>{
     let filter:filterValuesType = 'active'
     const startState:StateType = {

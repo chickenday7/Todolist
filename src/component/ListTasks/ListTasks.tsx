@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {TasksType} from "../../App";
+import {TaskType} from "../../App";
 import {ChangeNameForm} from "../AddItemForm/ChangeNameForm";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {createStyles, makeStyles} from "@material-ui/core";
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) =>
 
 type ListTasks = {
     todolistID: string
-    tasks: TasksType
+    tasks: TaskType
     deleteTasks: (keyTask: string, taskID: string) => void
     switchDone: (keyTask: string, taskID: string, done: boolean) => void
     renameTask: (todolistID: string, taskID: string, text: string) => void
@@ -34,7 +34,8 @@ const ListTasksMap = (props: ListTasks) => {
         props.deleteTasks(props.todolistID, props.tasks.id)
     }
     const onSwitchDone = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-        props.switchDone(props.todolistID, props.tasks.id, e.currentTarget.checked)
+        props.switchDone(props.todolistID, props.tasks.id, props.tasks.isDone)
+        debugger
     }
     const renameTask = (text: string) => {
         props.renameTask(props.todolistID, props.tasks.id, text)

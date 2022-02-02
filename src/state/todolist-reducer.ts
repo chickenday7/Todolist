@@ -1,6 +1,8 @@
-import {createStore} from "redux";
+import {applyMiddleware, createStore} from "redux";
 import {v4 as uuid_v4} from "uuid";
-import {filterValuesType} from "../App";
+import {filterValuesType, TaskType, TodoListType} from "../App";
+import thunk from "redux-thunk";
+
 
 const ADD_TODO = 'ADD_TODO'
 const REMOVE_TODO = 'REMOVE_TODO'
@@ -10,6 +12,8 @@ const ADD_TASK = 'ADD_TASK'
 const RENAME_TASK = 'RENAME_TASK'
 const CHANGE_DONE = 'CHANGE_DONE'
 const CHANGE_FILTER = 'CHANGE_FILTER'
+const SET_TASKS = 'SET_TASKS'
+const SET_TODO = 'SET_TODO'
 
 
 let todolistID1 = uuid_v4()
@@ -42,16 +46,19 @@ const initialState: StateType = {
     }
 }
 
-type ActionType = AddTodoACType |
+export type ActionType = AddTodoACType |
     RemoveTodoACType |
     RenameTodoACType |
     DeleteTaskACType |
     AddTaskACType |
     RenameTaskACType |
     ChangeDoneTaskACType |
-    ChangeFilterTodoAC
+    ChangeFilterTodoAC |
+    SetTasksACType |
+    SetTodoACType
 
 export const todolistReducer = (state = initialState, action: ActionType): StateType => {
+    debugger
     switch (action.type) {
         case ADD_TODO:
             let id = uuid_v4()
@@ -78,7 +85,8 @@ export const todolistReducer = (state = initialState, action: ActionType): State
         case DELETE_TASK:
             state.tasks[action.todoListID] = state.tasks[action.todoListID].filter(el => el.id !== action.taskID)
             return {
-                ...state
+                ...state,
+                tasks:{...state.tasks}
             }
         case ADD_TASK:
             state.tasks[action.todolistID] = [{
@@ -87,26 +95,39 @@ export const todolistReducer = (state = initialState, action: ActionType): State
                 isDone: false
             }, ...state.tasks[action.todolistID]]
             return {
-                ...state
+                ...state,
+                tasks: {...state.tasks}
             }
         case RENAME_TASK:
             state.tasks[action.todolistID] = state.tasks[action.todolistID].map(el => el.id === action.taskID ? {...el,title:action.newName} : el)
             return {
-                ...state
+                ...state,
+                tasks:{...state.tasks}
             }
         case CHANGE_DONE:
             state.tasks[action.todolistID] = state.tasks[action.todolistID].map(el => el.id === action.taskID ? {...el,isDone:!action.valueDone} : el)
             return {
-                ...state
+                ...state,
+                tasks:{...state.tasks}
             }
         case CHANGE_FILTER:
             return {
                 ...state,
                 todo: state.todo.map(el => el.id === action.todolistID ? {...el, filter:action.filter}: el)
             }
+        case SET_TASKS:
+            return {
+                ...state,
+                tasks: action.allTasks
+            }
+        case SET_TODO:
+            return {
+                ...state,
+                todo: action.allTodo
+            }
+
         default:
             return state
-
     }
 }
 
@@ -179,5 +200,20 @@ export const changeFilterTodoAC = (todolistID:string,filter:filterValuesType):Ch
   }
 }
 
+type SetTasksACType = {type:typeof SET_TASKS,allTasks:{[key:string]:TaskType[]}}
+export const setTasksAC = (allTasks:{[key:string]:TaskType[]}):SetTasksACType => {
+  return{
+      type:SET_TASKS,
+      allTasks
+  }
+}
 
-export let store = createStore(todolistReducer)
+type SetTodoACType = {type:typeof SET_TODO, allTodo:TodoListType[]}
+export const setTodoAC = (allTodo:TodoListType[]):SetTodoACType=>{
+    return{
+        type:SET_TODO,
+        allTodo
+    }
+}
+
+export let store = createStore(todolistReducer,applyMiddleware(thunk))

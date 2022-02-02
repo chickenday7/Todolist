@@ -1,105 +1,65 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import './AppStyle.module.scss';
 import TodoList from "./component/TodoList";
-import {v4 as uuid_v4} from "uuid";
 import {AddItemForm} from "./component/AddItemForm/AddItemForm";
 import s from './AppStyle.module.scss'
+import {compose, Dispatch} from "redux";
+import {connect} from "react-redux";
+import {
+    addTaskAC,
+    addTodoAC,
+    changeDoneTaskAC,
+    changeFilterTodoAC,
+    deleteTaskAC,
+    removeTodoAC,
+    renameTaskAC,
+    renameTodoAC,
+    setTasksAC,
+    setTodoAC,
+    StateType
+} from "./state/todolist-reducer";
 
 
 export type filterValuesType = 'all' | 'completed' | 'active'
-export type TasksType = {
+export type TaskType = {
     id: string
     title: string
     isDone: boolean
 }
+export type TodoListType = {
+    id: string,
+    title: string,
+    filter: filterValuesType
+}
 
+type AppPropsType = MapStateToPropsType & MapDispatchToPropsType
 
-function App() {
-    let todolistID1: string = uuid_v4()
-    let todolistID2: string = uuid_v4()
+function App(props: AppPropsType) {
 
-    type TodoListType = Array<{ id: string, title: string, filter: filterValuesType }>
-    let [todoList, setTodoList] = useState<TodoListType>([
-        {id: todolistID1, title: 'What to learn?', filter: 'all'},
-        {id: todolistID2, title: 'What to buy?', filter: 'all'},
-    ])
-
-    let [tasks, setTasks] = useState({
-            [todolistID1]: [
-                {id: uuid_v4(), title: 'React', isDone: true},
-                {id: uuid_v4(), title: 'JS', isDone: false},
-                {id: uuid_v4(), title: 'HTML', isDone: true},
-                {id: uuid_v4(), title: 'CSS', isDone: true},
-            ],
-            [todolistID2]: [
-                {id: uuid_v4(), title: 'Milk', isDone: true},
-                {id: uuid_v4(), title: 'Bread', isDone: false},
-                {id: uuid_v4(), title: 'Egg', isDone: true},
-                {id: uuid_v4(), title: 'Chocolate', isDone: true},]
-        }
-    )
 
     useEffect(() => {
         let prevTasks = localStorage.getItem('tasks')
         let prevTodoList = localStorage.getItem('todolist')
         if (prevTasks) {
-            setTasks(JSON.parse(prevTasks))
+            props.setTasks(JSON.parse(prevTasks))
         }
         if (prevTodoList) {
-            setTodoList(JSON.parse(prevTodoList))
+            props.setTodos(JSON.parse(prevTodoList))
         }
     }, [])
     useEffect(() => {
-        localStorage.setItem('tasks', JSON.stringify(tasks))
-        localStorage.setItem('todolist', JSON.stringify(todoList))
-    }, [tasks, todoList])
+        localStorage.setItem('tasks', JSON.stringify(props.tasks))
+        localStorage.setItem('todolist', JSON.stringify(props.todo))
+    }, [props.tasks, props.todo])
 
 
-    let addTodoList = (titleTodoList: string) => {
-        let idNewTodo = uuid_v4()
-        setTodoList([{id: idNewTodo, title: titleTodoList, filter: 'all'}, ...todoList])
-        tasks[idNewTodo] = []
-        setTasks({...tasks})
-    }
-    let removeTodolist = (todolistID: string) => {
-        let newArrayTodolists = todoList.filter(item => item.id !== todolistID)
-        setTodoList(newArrayTodolists)
-        delete tasks[todolistID]
-        setTasks({...tasks})
-    }
-    let renameTodolist = (text: string, keyTodolis: string): void => {
-        let newTodolist = todoList.map(item => item.id === keyTodolis ? {...item, title: text} : item)
-        setTodoList(newTodolist)
-    }
-    let deleteTasks = (keyTodolist: string, taskID: string): void => {
-        tasks[keyTodolist] = tasks[keyTodolist].filter(task => task.id !== taskID)
-        setTasks({...tasks})
-    }
-    let addTask = (text: string, keyTodolist: string): void => {
-        tasks[keyTodolist] = [...tasks[keyTodolist], {id: uuid_v4(), title: text, isDone: false}]
-        setTasks({...tasks})
-    }
-    let renameTask = (todolistID:string,taskID:string,text:string)=>{
-        tasks[todolistID] = tasks[todolistID].map(task => task.id === taskID ? {...task,title:text}:task)
-        setTasks({...tasks})
-    }
-    let switchDone = (keyTodolist: string, taskID: string, isDone: boolean) => {
-        tasks[keyTodolist] = tasks[keyTodolist].map(task => task.id === taskID ? {...task, isDone} : task)
-        setTasks({...tasks})
-    }
-    let changeFilter = (filterValue: filterValuesType, todolistID: string) => {
-        let newTodoList = todoList.map(item => item.id === todolistID ? {...item, filter: filterValue} : item)
-        setTodoList(newTodoList)
-    }
-
-
-    let AllTodoLists = todoList.map((item) => {
-        let filteredTasks = tasks[item.id]
+    let AllTodoLists = props.todo.map((item) => {
+        let filteredTasks = props.tasks[item.id]
         if (item.filter === 'completed') {
-            filteredTasks = filteredTasks.filter((task: TasksType) => task.isDone)
+            filteredTasks = filteredTasks.filter((task: TaskType) => task.isDone)
         }
         if (item.filter === 'active') {
-            filteredTasks = filteredTasks.filter((task: TasksType) => !task.isDone)
+            filteredTasks = filteredTasks.filter((task: TaskType) => !task.isDone)
         }
 
 
@@ -108,20 +68,20 @@ function App() {
             todolistID={item.id}
             title={item.title}
             tasks={filteredTasks}
-            deleteTasks={deleteTasks}
-            changeFilter={changeFilter}
-            addTask={addTask}
-            switchDone={switchDone}
-            removeTodolist={removeTodolist}
-            renameTodolist={renameTodolist}
-            renameTask={renameTask}
+            deleteTasks={props.deleteTask}
+            changeFilter={props.changeFilterTodo}
+            addTask={props.addTask}
+            switchDone={props.changeDoneTask}
+            removeTodolist={props.removeTodo}
+            renameTodolist={props.renameTodo}
+            renameTask={props.renameTask}
         />
     })
 
     return (
         <div className={s.App}>
             <div className={s.wrapperAddForm}>
-                <AddItemForm label={'Todolist'} callback={addTodoList}/>
+                <AddItemForm label={'Todolist'} callback={props.addTodo}/>
             </div>
             <div className={s.wrapperTodolists}>
                 {AllTodoLists}
@@ -131,4 +91,64 @@ function App() {
     );
 }
 
-export default App;
+type MapStateToPropsType = {
+    todo: TodoListType[],
+    tasks: { [key: string]: TaskType[] }
+}
+const mapStateToProps = (state: StateType): MapStateToPropsType => {
+    return {
+        todo: state.todo,
+        tasks: state.tasks
+    }
+}
+
+type MapDispatchToPropsType = {
+    addTodo: (nameTask: string) => void
+    removeTodo: (id: string) => void
+    renameTodo: (id: string, newName: string) => void
+    deleteTask: (todoListID: string, taskID: string) => void
+    addTask: (todoListID: string, taskTitle: string) => void
+    renameTask: (todoListID: string, taskID: string, newName: string) => void
+    changeDoneTask: (todolistID: string, taskID: string, valueDone: boolean) => void
+    changeFilterTodo: (todolistID: string, filter: filterValuesType) => void
+    setTasks:(allTasks:{[key:string]:TaskType[]})=>void
+    setTodos:(allTodo:TodoListType[])=>void
+}
+const mapDispatchToProps = (dispatch: Dispatch): MapDispatchToPropsType => {
+    return {
+        addTodo: (nameTask: string) => {
+            dispatch(addTodoAC(nameTask))
+        },
+        removeTodo: (id: string) => {
+            dispatch(removeTodoAC(id))
+        },
+        renameTask: (todoListID, taskID, newName) => {
+            dispatch(renameTaskAC(todoListID, taskID, newName))
+        },
+        deleteTask: (todoListID, taskID) => {
+            dispatch(deleteTaskAC(todoListID, taskID))
+        },
+        addTask: (todoListID, taskTitle) => {
+            dispatch(addTaskAC(todoListID, taskTitle))
+        },
+        renameTodo: (id, newName) => {
+            dispatch(renameTodoAC(id, newName))
+        },
+        changeDoneTask: (todolistId, taskID, valueDone) => {
+            dispatch(changeDoneTaskAC(todolistId, taskID, valueDone))
+        },
+        changeFilterTodo: (todolistID, filter) => {
+            dispatch(changeFilterTodoAC(todolistID, filter))
+        },
+        setTasks:(alltasks)=>{
+            dispatch(setTasksAC(alltasks))
+        },
+        setTodos:(allTodo:TodoListType[])=>{
+            dispatch(setTodoAC(allTodo))
+        }
+    }
+}
+
+export default compose(
+    connect(mapStateToProps, mapDispatchToProps)
+)(App);

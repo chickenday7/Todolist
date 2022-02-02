@@ -1,5 +1,5 @@
 import React, {MouseEvent, ReactNode, useState} from "react";
-import {filterValuesType, TasksType} from "../App";
+import {filterValuesType, TaskType} from "../App";
 import ListTasksMap from "./ListTasks/ListTasks";
 import {AddItemForm} from "./AddItemForm/AddItemForm";
 import {ChangeNameForm} from "./AddItemForm/ChangeNameForm";
@@ -45,13 +45,13 @@ const useStyles = makeStyles((theme: Theme) =>
 type TodoListProps = {
     todolistID: string
     title: string
-    tasks: Array<TasksType>
+    tasks: Array<TaskType>
     deleteTasks: (keyTask: string, taskID: string) => void
-    changeFilter: (filterValue: filterValuesType, todolistID: string) => void
-    addTask: (text: string, keyTask: string) => void
+    changeFilter: ( todolistID: string,filterValue: filterValuesType) => void
+    addTask: ( keyTask: string,text: string) => void
     switchDone: (keyTask: string, taskID: string, done: boolean) => void
     removeTodolist: (todolistID: string) => void
-    renameTodolist: (text: string, keyTodolist: string) => void
+    renameTodolist: ( keyTodolist: string,text: string,) => void
     renameTask: (todolistID: string, taskID: string, text: string) => void
 }
 const TodoList = (props: TodoListProps) => {
@@ -67,21 +67,22 @@ const TodoList = (props: TodoListProps) => {
     const [hoverFroEdit,setHoverForEdit] = useState<boolean>(false)
 
     const onSetFilter = (e: MouseEvent<HTMLButtonElement>) => {
-        props.changeFilter(e.currentTarget.name as filterValuesType, props.todolistID)
+        props.changeFilter(props.todolistID,e.currentTarget.name as filterValuesType )
     }
     const onRemoveTodolist = () => {
         props.removeTodolist(props.todolistID)
     }
     const addTask = (text: string) => {
-        props.addTask(text, props.todolistID)
+        props.addTask(props.todolistID,text )
     }
     const onInputMode = () => {
         setChangeMode(true)
     }
     const renameTask = (text: string) => {
-        props.renameTodolist(text, props.todolistID)
+        props.renameTodolist(props.todolistID, text)
     }
     const classes = useStyles();
+    console.log(props)
     return (
         <div className={s.wrapperTodo}>
             {changeMod
